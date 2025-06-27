@@ -3,6 +3,7 @@ package com.chuncho.angel.cazarpatos
 import android.content.Intent
 import android.media.MediaPlayer
 import android.os.Bundle
+import android.util.Log
 import android.widget.Button
 import android.widget.CheckBox
 import android.widget.EditText
@@ -22,7 +23,7 @@ class LoginActivity : AppCompatActivity() {
         enableEdgeToEdge()
         setContentView(R.layout.activity_login)
         //Inicialización de variables
-        manejadorArchivo = SharedPreferences(this)
+        manejadorArchivo = SharedPreferencesManager(this)
         editTextEmail = findViewById(R.id.editTextEmail)
         editTextPassword = findViewById(R.id.editTextPassword)
         buttonLogin = findViewById(R.id.buttonLogin)
@@ -30,6 +31,7 @@ class LoginActivity : AppCompatActivity() {
         checkBoxRecordarme = findViewById(R.id.checkBoxRecordarme)
 
         leerDatosDePreferencias()
+        leerDatosDePreferenciasEncrypted()
 
         //Eventos clic
         buttonLogin.setOnClickListener {
@@ -39,6 +41,7 @@ class LoginActivity : AppCompatActivity() {
             if (!validateRequiredData())
                 return@setOnClickListener
             guardarDatosEnPreferenias()
+            guardarDatosEnPreferenciasEncrypted()
             //Si pasa validación de datos requeridos, ir a pantalla principal
             val intent = Intent(this, MainActivity::class.java)
             intent.putExtra(EXTRA_LOGIN, email)
@@ -73,6 +76,24 @@ class LoginActivity : AppCompatActivity() {
         }
         editTextEmail.setText(listadoLeido.first)
         editTextPassword.setText(listadoLeido.second)
+    }
+
+    private fun guardarDatosEnPreferenciasEncrypted(){
+        // TODO: Revisar
+//        manejadorArchivo = SharedPreferencesManager(this)
+//        manejadorArchivo.SaveInformation(" epn.fis " to "123")
+//        manejadorArchivo = EncryptedSharedPreferencesManager(this)
+//        manejadorArchivo.SaveInformation(" epn.fis " to "1234")
+    }
+    private fun leerDatosDePreferenciasEncrypted(){
+        // TODO: Revisar
+//        var datoLeido : Pair<String, String>
+//        manejadorArchivo = SharedPreferencesManager(this)
+//        datoLeido = manejadorArchivo.ReadInformation()
+//        Log.d("TAG", "SharedPreferencesManager " + datoLeido.toList().toString())
+//        manejadorArchivo = EncryptedSharedPreferencesManager(this)
+//        datoLeido = manejadorArchivo.ReadInformation()
+//        Log.d("TAG", "EncriptedSharedPreferencesManager " + datoLeido.toList().toString())
     }
 
     private fun validateRequiredData(): Boolean {
