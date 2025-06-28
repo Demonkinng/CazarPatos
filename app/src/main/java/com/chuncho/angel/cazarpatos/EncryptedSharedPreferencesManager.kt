@@ -9,6 +9,7 @@ class EncryptedSharedPreferencesManager(actividad: Activity) : FileHandler {
     val masterKey = MasterKey.Builder(actividad)
         .setKeyScheme(MasterKey.KeyScheme.AES256_GCM)
         .build()
+
     val sharedPreferences = EncryptedSharedPreferences.create(
         actividad,//context
         "secret_shared_prefs",//filename
