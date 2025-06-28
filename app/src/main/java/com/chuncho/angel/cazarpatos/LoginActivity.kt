@@ -68,6 +68,8 @@ class LoginActivity : AppCompatActivity() {
         manejadorArchivo.SaveInformation(listadoAGrabar)
         manejadorArchivo = FileInternalManager(this)
         manejadorArchivo.SaveInformation(listadoAGrabar)
+        manejadorArchivo = FileExternalManager(this)
+        manejadorArchivo.SaveInformation(listadoAGrabar)
     }
 
     private fun leerDatosDePreferencias() {
@@ -89,6 +91,14 @@ class LoginActivity : AppCompatActivity() {
         editTextPassword.setText(listadoLeido.second)
 
         manejadorArchivo = FileInternalManager(this)
+        listadoLeido = manejadorArchivo.ReadInformation()
+        if (listadoLeido.first.isNotBlank()) {
+            checkBoxRecordarme.isChecked = true
+        }
+        editTextEmail.setText(listadoLeido.first)
+        editTextPassword.setText(listadoLeido.second)
+
+        manejadorArchivo = FileExternalManager(this)
         listadoLeido = manejadorArchivo.ReadInformation()
         if (listadoLeido.first.isNotBlank()) {
             checkBoxRecordarme.isChecked = true
