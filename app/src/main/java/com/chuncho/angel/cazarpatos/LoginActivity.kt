@@ -66,10 +66,12 @@ class LoginActivity : AppCompatActivity() {
         manejadorArchivo.SaveInformation(listadoAGrabar)
         manejadorArchivo = EncryptedSharedPreferencesManager(this)
         manejadorArchivo.SaveInformation(listadoAGrabar)
+        manejadorArchivo = FileInternalManager(this)
+        manejadorArchivo.SaveInformation(listadoAGrabar)
     }
 
     private fun leerDatosDePreferencias() {
-        var listadoLeido : Pair<String, String>
+        var listadoLeido: Pair<String, String>
         manejadorArchivo = SharedPreferencesManager(this)
         listadoLeido = manejadorArchivo.ReadInformation()
         if (listadoLeido.first.isNotBlank()) {
@@ -79,6 +81,14 @@ class LoginActivity : AppCompatActivity() {
         editTextPassword.setText(listadoLeido.second)
 
         manejadorArchivo = EncryptedSharedPreferencesManager(this)
+        listadoLeido = manejadorArchivo.ReadInformation()
+        if (listadoLeido.first.isNotBlank()) {
+            checkBoxRecordarme.isChecked = true
+        }
+        editTextEmail.setText(listadoLeido.first)
+        editTextPassword.setText(listadoLeido.second)
+
+        manejadorArchivo = FileInternalManager(this)
         listadoLeido = manejadorArchivo.ReadInformation()
         if (listadoLeido.first.isNotBlank()) {
             checkBoxRecordarme.isChecked = true
