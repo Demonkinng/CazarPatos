@@ -15,6 +15,7 @@ securityCryptoVersion = "1.1.0-alpha07"
 googleGmsGoogleServices = "4.4.3"
 firebaseAuth = "23.2.1"
 firebaseFirestore = "25.1.4"
+playServicesAds = "24.5.0"
 
 [libraries]
 androidx-core-ktx = { group = "androidx.core", name = "core-ktx", version.ref = "coreKtx" }
@@ -31,6 +32,7 @@ androidx-security-crypto = { group = "androidx.security", name = "security-crypt
 security-crypto = { group = "androidx.security", name = "security-crypto", version.ref = "securityCryptoVersion" }
 firebase-auth = { group = "com.google.firebase", name = "firebase-auth", version.ref = "firebaseAuth" }
 firebase-firestore = { group = "com.google.firebase", name = "firebase-firestore", version.ref = "firebaseFirestore" }
+play-services-ads = { group = "com.google.android.gms", name = "play-services-ads", version.ref = "playServicesAds" }
 
 [plugins]
 android-application = { id = "com.android.application", version.ref = "agp" }

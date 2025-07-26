@@ -17,8 +17,17 @@ import android.widget.ImageView
 import android.widget.TextView
 import android.widget.Toast
 import androidx.appcompat.app.AlertDialog
+import com.google.android.gms.ads.AdError
+import com.google.android.gms.ads.AdRequest
+import com.google.android.gms.ads.AdView
+import com.google.android.gms.ads.FullScreenContentCallback
+import com.google.android.gms.ads.LoadAdError
+import com.google.android.gms.ads.MobileAds
+import com.google.android.gms.ads.interstitial.InterstitialAd
+import com.google.android.gms.ads.interstitial.InterstitialAdLoadCallback
 import com.google.firebase.Firebase
 import com.google.firebase.firestore.firestore
+import java.util.Locale
 import kotlin.random.Random
 
 
@@ -37,6 +46,9 @@ class MainActivity : AppCompatActivity() {
     private var soundId: Int = 0
     private var isLoaded = false
     private var gameOver = false
+    lateinit var mAdView: AdView
+    private var interstitialAd: InterstitialAd? = null
+    private var TAG = "MainActivity"
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -52,6 +64,17 @@ class MainActivity : AppCompatActivity() {
         textViewCounter = findViewById(R.id.textViewCounter)
         textViewTime = findViewById(R.id.textViewTime)
         imageViewDuck = findViewById(R.id.imageViewDuck)
+
+        MobileAds.initialize(this) {}
+        //Ads Inicialización y carga
+        mAdView = findViewById(R.id.adView)
+        //mAdView.setAdSize(AdSize.BANNER)
+        //mAdView.adUnitId = "ca-app-pub-3940256099942544/9214589741" //ID para testing
+        //mAdView.adUnitId = "ca-app-pub-9624227872779318/1299622037" //TODO: Colocar esto antes de publicar en playStore
+        val adRequest = AdRequest.Builder().build()
+        mAdView.loadAd(adRequest)
+        loadInterstitialAd()
+
 
         //Obtener el usuario de pantalla login
         val extras = intent.extras ?: return
@@ -107,7 +130,7 @@ class MainActivity : AppCompatActivity() {
     private fun moveDuckRandomly() {
         val min = imageViewDuck.getWidth() / 2
         val maximoX = screenWidth - imageViewDuck.getWidth()
-        val maximoY = screenHeight - imageViewDuck.getHeight()
+        val maximoY = screenHeight - imageViewDuck.getHeight() - mAdView.height //Por AdMob
         // Generamos 2 números aleatorios, para la coordenadas x , y
         val randomX = Random.nextInt(0, maximoX - min + 1)
         val randomY = Random.nextInt(92, maximoY - min + 1)
@@ -140,6 +163,7 @@ class MainActivity : AppCompatActivity() {
     }
 
     private fun showGameOverDialog() {
+        showInterstitial()
         val builder = AlertDialog.Builder(this)
         builder
             .setMessage(getString(R.string.dialog_message_congratulations, counter))
@@ -282,5 +306,71 @@ class MainActivity : AppCompatActivity() {
     override fun onDestroy() {
         super.onDestroy()
         soundPool.release()
+    }
+
+    private fun showInterstitial() {
+        // Show the ad if it"s ready. Otherwise toast and reload the ad.
+        if (interstitialAd != null) {
+            interstitialAd!!.show(this)
+        } else {
+            loadInterstitialAd()
+            //Toast.makeText(this, "Ad did not load", Toast.LENGTH_SHORT).show()
+        }
+    }
+
+    private fun loadInterstitialAd() {
+        val adRequest = AdRequest.Builder().build()
+        InterstitialAd.load(
+            this, "ca-app-pub-3940256099942544/1033173712", adRequest,
+            object : InterstitialAdLoadCallback() {
+                override fun onAdLoaded(ad: InterstitialAd) {
+                    // The interstitialAd reference will be null until
+                    // an ad is loaded.
+                    interstitialAd = ad
+                    Toast.makeText(this@MainActivity, "onAdLoaded()", Toast.LENGTH_SHORT)
+                        .show()
+                    ad.setFullScreenContentCallback(
+                        object : FullScreenContentCallback() {
+                            override fun onAdDismissedFullScreenContent() {
+                                // Called when fullscreen content is dismissed.
+                                // Make sure to set your reference to null so you don't
+                                // show it a second time.
+                                interstitialAd = null
+                                Log.d(TAG, "The ad was dismissed.")
+                            }
+
+                            override fun onAdFailedToShowFullScreenContent(adError: AdError) {
+                                // Called when fullscreen content failed to show.
+                                // Make sure to set your reference to null so you don't
+                                // show it a second time.
+                                interstitialAd = null
+                                Log.d(TAG, "The ad failed to show.")
+                            }
+
+                            override fun onAdShowedFullScreenContent() {
+                                // Called when fullscreen content is shown.
+                                Log.d(TAG, "The ad was shown.")
+                            }
+                        })
+                }
+
+                override fun onAdFailedToLoad(loadAdError: LoadAdError) {
+                    // Handle the error
+                    Log.i(TAG, loadAdError.message)
+                    interstitialAd = null
+                    val error: String = String.format(
+                        Locale.ENGLISH,
+                        "domain: %s, code: %d, message: %s",
+                        loadAdError.domain,
+                        loadAdError.code,
+                        loadAdError.message
+                    )
+                    Toast.makeText(
+                        this@MainActivity,
+                        "onAdFailedToLoad() with error: $error", Toast.LENGTH_SHORT
+                    )
+                        .show()
+                }
+            })
     }
 }
