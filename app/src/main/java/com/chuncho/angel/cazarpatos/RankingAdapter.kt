@@ -4,6 +4,7 @@ import android.graphics.Paint
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.widget.ImageView
 import android.widget.TextView
 import androidx.recyclerview.widget.RecyclerView
 
@@ -59,10 +60,33 @@ class RankingAdapter(private val dataSet: ArrayList<Player>) :
             holder.textViewUsuario.paintFlags =
                 holder.textViewUsuario.paintFlags or Paint.UNDERLINE_TEXT_FLAG
             holder.textViewUsuario.setTextColor(holder.textViewUsuario.context.getColor(R.color.colorPrimaryDark))
+            holder.itemView.findViewById<ImageView>(R.id.imageViewMedal)?.visibility = View.GONE
         } else if (holder is ViewHolder) {
             holder.textViewPosicion.text = position.toString()
             holder.textViewPatosCazados.text = dataSet[position - 1].huntedDucks.toString()
             holder.textViewUsuario.text = dataSet[position - 1].username
+            val medalView = holder.itemView.findViewById<ImageView>(R.id.imageViewMedal)
+            when (position) {
+                1 -> {
+                    medalView.setImageResource(R.drawable.gold)
+                    medalView.visibility = View.VISIBLE
+                }
+
+                2 -> {
+                    medalView.setImageResource(R.drawable.silver)
+                    medalView.visibility = View.VISIBLE
+                }
+
+                3 -> {
+                    medalView.setImageResource(R.drawable.bronze)
+                    medalView.visibility = View.VISIBLE
+                }
+
+                else -> {
+                    medalView.setImageResource(R.drawable.empty)
+                    medalView.visibility = View.VISIBLE
+                }
+            }
         }
     }
 

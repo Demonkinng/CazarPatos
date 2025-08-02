@@ -20,6 +20,7 @@ class LoginActivity : AppCompatActivity() {
     lateinit var editTextPassword: EditText
     lateinit var buttonLogin: Button
     lateinit var buttonNewUser: Button
+    lateinit var buttnRanking: Button
     lateinit var checkBoxRecordarme: CheckBox
     lateinit var mediaPlayer: MediaPlayer
     private lateinit var auth: FirebaseAuth
@@ -32,6 +33,7 @@ class LoginActivity : AppCompatActivity() {
         editTextPassword = findViewById(R.id.editTextPassword)
         buttonLogin = findViewById(R.id.buttonLogin)
         buttonNewUser = findViewById(R.id.buttonNewUser)
+        buttnRanking = findViewById(R.id.buttonRanking)
         checkBoxRecordarme = findViewById(R.id.checkBoxRecordarme)
         // Inicialización de Firebase Auth
         auth = Firebase.auth
@@ -50,13 +52,15 @@ class LoginActivity : AppCompatActivity() {
         }
 
         buttonNewUser.setOnClickListener {
-            //Registrar nuevo usuario en la misma pantalla de login
-            val email = editTextEmail.text.toString()
-            val clave = editTextPassword.text.toString()
-            if (!validateRequiredData())
-                return@setOnClickListener
-            guardarDatosEnPreferencias()
-            registrarUsuario(email, clave)
+            //Ir a actividad para registrar nuevo usuario
+            val intencion = Intent(this, RegisterActivity::class.java)
+            startActivity(intencion)
+        }
+
+        buttnRanking.setOnClickListener {
+            //Ir a actividad de ranking
+            val intencion = Intent(this, RankingActivity::class.java)
+            startActivity(intencion)
         }
 
         mediaPlayer = MediaPlayer.create(this, R.raw.title_screen)
@@ -185,5 +189,19 @@ class LoginActivity : AppCompatActivity() {
     override fun onDestroy() {
         mediaPlayer.release()
         super.onDestroy()
+    }
+
+    override fun onStart() {
+        super.onStart()
+        if (auth.currentUser != null) {
+            val intent = Intent(this, MainActivity::class.java)
+            intent.putExtra(EXTRA_LOGIN, auth.currentUser!!.email)
+            startActivity(intent)
+            Toast.makeText(
+                this, "Welcome back ${auth.currentUser!!.email}",
+                Toast.LENGTH_SHORT
+            ).show()
+            finish()
+        }
     }
 }

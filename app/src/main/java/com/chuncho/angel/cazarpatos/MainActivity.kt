@@ -26,6 +26,8 @@ import com.google.android.gms.ads.MobileAds
 import com.google.android.gms.ads.interstitial.InterstitialAd
 import com.google.android.gms.ads.interstitial.InterstitialAdLoadCallback
 import com.google.firebase.Firebase
+import com.google.firebase.auth.FirebaseAuth
+import com.google.firebase.auth.auth
 import com.google.firebase.firestore.firestore
 import java.util.Locale
 import kotlin.random.Random
@@ -37,6 +39,7 @@ class MainActivity : AppCompatActivity() {
     private lateinit var textViewTime: TextView
     private lateinit var imageViewDuck: ImageView
     private lateinit var soundPool: SoundPool
+    private lateinit var auth: FirebaseAuth
 
     // Manejador para retrasar la restauración de la imagen original
     private val handler = Handler(Looper.getMainLooper())
@@ -64,6 +67,8 @@ class MainActivity : AppCompatActivity() {
         textViewCounter = findViewById(R.id.textViewCounter)
         textViewTime = findViewById(R.id.textViewTime)
         imageViewDuck = findViewById(R.id.imageViewDuck)
+        // Inicialización de Firebase Auth
+        auth = Firebase.auth
 
         MobileAds.initialize(this) {}
         //Ads Inicialización y carga
@@ -174,7 +179,8 @@ class MainActivity : AppCompatActivity() {
             }
             .setNegativeButton(getString(R.string.button_close)) { _, _ ->
                 // Dialog dismisses automatically
-                val intent = Intent(this, RankingActivity::class.java)
+                auth.signOut() // Cerrar sesión de Firebase
+                val intent = Intent(this, LoginActivity::class.java)
                 startActivity(intent)
                 finish()
             }
